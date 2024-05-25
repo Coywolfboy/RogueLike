@@ -43,6 +43,10 @@ public class GameManager : MonoBehaviour
     {
         Enemies.Add(enemy);
     }
+    public void RemoveEnemy(Actor enemy)
+    {
+        Enemies.Remove(enemy);
+    }
     public void StartEnemyTurn()
     {
         foreach (var enemy in GameManager.Get.Enemies)
