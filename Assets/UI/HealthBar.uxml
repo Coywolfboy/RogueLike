@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="HealthBarRoot" style="position: absolute; left: 25px; bottom: 25px; -unity-font-definition: resource(&apos;font&apos;); -unity-font: url(&apos;project://database/Assets/Fonts/JazzCreateBubble.ttf?fileID=12800000&amp;guid=58b647c5b2ec4184e9a07a561cdf0644&amp;type=3#JazzCreateBubble&apos;);">
+        <ui:VisualElement name="HealthBarContainer" style="background-color: red; justify-content: center; align-items: center;">
+            <ui:VisualElement name="HealthBar" style="background-color: green; position: absolute; left: 0; top: 0; bottom: 0; right: auto; width: 73px;" />
+            <ui:Label name="HealthText" text="30/30 HP" style="unity-font: url(&apos;Assets/Resources/YourFontAsset&apos;); color: white; -unity-font: url(&apos;project://database/Library/unity%20default%20resources?fileID=10102&amp;guid=0000000000000000e000000000000000&amp;type=0#LegacyRuntime&apos;); -unity-font-style: italic;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

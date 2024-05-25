@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="MessagesRoot" style="position: absolute; bottom: 0; width: 500px; height: 100px; background-color: black; align-self: center; -unity-font: url(&apos;project://database/Assets/Fonts/JazzCreateBubble.ttf?fileID=12800000&amp;guid=58b647c5b2ec4184e9a07a561cdf0644&amp;type=3#JazzCreateBubble&apos;); -unity-font-definition: resource(&apos;font&apos;);">
+        <ui:Label name="Label5" text="Label" style="unity-font: url(&apos;Assets/Resources/font.asset&apos;); color: white;" />
+        <ui:Label name="Label4" text="Label" style="unity-font: url(&apos;Assets/Resources/font.asset&apos;); color: white;" />
+        <ui:Label name="Label3" text="Label" style="unity-font: url(&apos;Assets/Resources/font.asset&apos;); color: white;" />
+        <ui:Label name="Label2" text="Label" style="unity-font: url(&apos;Assets/Resources/font.asset&apos;); color: white;" />
+        <ui:Label name="Label1" text="Label" style="unity-font: url(&apos;Assets/Resources/font.asset&apos;); color: white;" />
+    </ui:VisualElement>
+</ui:UXML>
