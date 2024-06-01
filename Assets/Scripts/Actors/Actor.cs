@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Actor : MonoBehaviour
 {
     private AdamMilVisibility algorithm;
+
+    [Header("FieldOfView")]
     public List<Vector3Int> FieldOfView = new List<Vector3Int>();
     public int FieldOfViewRange = 8;
 
@@ -14,55 +17,20 @@ public class Actor : MonoBehaviour
     [SerializeField] private int defense;
     [SerializeField] private int power;
 
-    public int MaxHitPoints => maxHitPoints;
-    public int HitPoints => hitPoints;
-    public int Defense => defense;
-    public int Power => power;
+    public int MaxHitPoints { get => maxHitPoints; }
+    public int HitPoints { get => hitPoints; }
+    public int Defense { get => defense; }
+    public int Power { get => power; }
+
+
     private void Start()
     {
         algorithm = new AdamMilVisibility();
         UpdateFieldOfView();
-        if (GetComponent<Player>())
-        {
-            UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
-        }
-    }
-
-    private void Die()
-    {
-        if (GetComponent<Player>())
-        {
-            UIManager.Instance.AddMessage("You died!", Color.red);
-        }
-        else
-        {
-            UIManager.Instance.AddMessage($"{name} is dead!", Color.green);
-        }
-
-        GameObject remains = GameManager.Get.CreateActor("Gravestone", transform.position);
-        remains.name = $"Remains of {name}";
-
-        if (GetComponent<Enemy>())
-        {
-            GameManager.Get.RemoveEnemy(this);
-        }
-
-        Destroy(gameObject);
-    }
-
-    public void DoDamage(int hp)
-    {
-        hitPoints -= hp;
-        if (hitPoints < 0) hitPoints = 0;
 
         if (GetComponent<Player>())
         {
-            UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
-        }
-
-        if (hitPoints == 0)
-        {
-            Die();
+            UIManager.Get.UpdateHealth(HitPoints, MaxHitPoints);
         }
     }
 
@@ -85,5 +53,34 @@ public class Actor : MonoBehaviour
         {
             MapManager.Get.UpdateFogMap(FieldOfView);
         }
+    }
+
+    public void DoDamage(int hp)
+    {
+        hitPoints -= hp;
+
+        if (hitPoints < 0) hitPoints = 0;
+
+        if (GetComponent<Player>())
+        {
+            UIManager.Get.UpdateHealth(hitPoints, MaxHitPoints);
+        }
+
+        if (hitPoints == 0) Die();
+    }
+
+    private void Die()
+    {
+        if (GetComponent<Player>())
+        {
+            UIManager.Get.AddMessage("You died!", Color.red); //Red
+        }
+        else
+        {
+            UIManager.Get.AddMessage($"{name} is dead!", Color.green); //Light Orange
+        }
+        GameManager.Get.CreateGameObject("Dead", transform.position).name = $"Remains of {name}";
+        GameManager.Get.RemoveEnemy(this);
+        Destroy(gameObject);
     }
 }

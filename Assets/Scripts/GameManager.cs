@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    public List<Actor> Enemies { get; private set; } = new List<Actor>();
-    public Actor Player { get; set; }
+
     private void Awake()
     {
         if (instance == null)
@@ -19,63 +17,83 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
 
     public static GameManager Get { get => instance; }
 
-    public Actor GetActorAtLocation(Vector3 location)
-    {
-        if (Player != null && Player.transform.position == location)
-        {
-            return Player;
-        }
+    public Actor Player;
+    public List<Actor> Enemies = new List<Actor>();
+    private List<Consumable> items = new List<Consumable>();
 
-        foreach (var enemy in Enemies)
-        {
-            if (enemy != null && enemy.transform.position == location)
-            {
-                return enemy;
-            }
-        }
-        return null;
+    public GameObject CreateGameObject(string name, Vector2 position)
+    {
+        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
+        actor.name = name;
+        return actor;
+    }
+    public GameObject CreateItem(string name, Vector2 position)
+    {
+        GameObject item = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
+        AddItem(item.GetComponent<Consumable>());
+        item.name = name;
+        return item;
     }
     public void AddEnemy(Actor enemy)
     {
         Enemies.Add(enemy);
     }
+
     public void RemoveEnemy(Actor enemy)
     {
-        Enemies.Remove(enemy);
+        if (Enemies.Contains(enemy))
+        {
+            Enemies.Remove(enemy);
+        }
     }
+
     public void StartEnemyTurn()
     {
-        foreach (var enemy in GameManager.Get.Enemies)
+        foreach(var enemy in Enemies)
         {
-            Enemy enemyComponent = enemy.GetComponent<Enemy>();
-            if (enemyComponent != null)
+            enemy.GetComponent<Enemy>().RunAI();
+        }
+    }
+
+    public Actor GetActorAtLocation(Vector3 location)
+    {
+        if (Player.transform.position == location)
+        {
+            return Player;
+        } else
+        {
+            foreach(Actor enemy in Enemies)
             {
-                enemyComponent.RunAI();
+                if (enemy.transform.position == location)
+                {
+                    return enemy;
+                }
             }
         }
+        return null;
     }
-    public GameObject CreateActor(string name, Vector2 position)
+    public void AddItem(Consumable item)
     {
-        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
-
-        if (name == "Player")
-        {
-            Player = actor.GetComponent<Actor>();
-        }
-        else
-        {
-            AddEnemy(actor.GetComponent<Actor>());
-        }
-
-        actor.name = name;
-        return actor;
+        items.Add(item);
     }
-    private void Start()
+
+    public void RemoveItem(Consumable item)
     {
-        Player = GetComponent<Actor>();
+        items.Remove(item);
+    }
+
+    public Consumable GetItemAtLocation(Vector3 location)
+    {
+        foreach (var item in items)
+        {
+            if (item != null && item.transform.position == location)
+            {
+                return item;
+            }
+        }
+        return null;
     }
 }

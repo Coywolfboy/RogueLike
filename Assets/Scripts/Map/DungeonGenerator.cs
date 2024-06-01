@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -8,6 +9,8 @@ public class DungeonGenerator : MonoBehaviour
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
     private int maxEnemies;
+    private int maxItems;
+
     List<Room> rooms = new List<Room>();
 
     public void SetSize(int width, int height)
@@ -31,6 +34,11 @@ public class DungeonGenerator : MonoBehaviour
     {
         maxEnemies = max;
     }
+    public void SetMaxItems(int max)
+    {
+        maxItems = max;
+    }
+
     public void Generate()
     {
         rooms.Clear();
@@ -79,12 +87,11 @@ public class DungeonGenerator : MonoBehaviour
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
-
             PlaceEnemies(room, maxEnemies);
-
+            PlaceItems(room, maxItems);
             rooms.Add(room);
         }
-        var player = MapManager.Get.CreateActor("Player", rooms[0].Center());
+        var player = GameManager.Get.CreateGameObject("Player", rooms[0].Center());
     }
 
     private bool TrySetWallTile(Vector3Int pos)
@@ -152,24 +159,53 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
     }
+
     private void PlaceEnemies(Room room, int maxEnemies)
     {
-        // the number of enemies we want 
+        // the number of enemies we want
         int num = Random.Range(0, maxEnemies + 1);
-        for (int counter = 0; counter < num; counter++)
+
+        for(int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and substract by 1 
+            // The borders of the room are walls, so add and substract by 1
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different enemies 
+            // create different enemies
             if (Random.value < 0.5f)
             {
-                GameManager.Get.CreateActor("Enemy", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("Pig", new Vector2(x, y));
             }
             else
             {
-                GameManager.Get.CreateActor("Enemy1", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("Snake", new Vector2(x, y));
+            }
+        }
+    }
+    private void PlaceItems(Room room, int maxItems)
+    {
+        // the number of items we want to place
+        int num = Random.Range(0, maxItems + 1);
+
+        for (int counter = 0; counter < num; counter++)
+        {
+            // The borders of the room are walls, so add and subtract by 1
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1);
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // randomly choose an item to place
+            float itemType = Random.value;
+            if (itemType < 0.33f)
+            {
+                GameManager.Get.CreateItem("HealthPotion", new Vector2(x, y));
+            }
+            else if (itemType < 0.66f)
+            {
+                GameManager.Get.CreateItem("Fireball", new Vector2(x, y));
+            }
+            else
+            {
+                GameManager.Get.CreateItem("ScrollOfConfusion", new Vector2(x, y));
             }
         }
     }

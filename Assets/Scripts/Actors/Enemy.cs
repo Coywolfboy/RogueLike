@@ -1,23 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Actor), typeof(AStar))]
 public class Enemy : MonoBehaviour
 {
-    public Actor Target { get; set; }
-    public bool IsFighting { get; private set; } = false;
+    public Actor Target;
+    public bool IsFighting = false;
     private AStar algorithm;
 
-    void Start()
+    private void Start()
     {
-        algorithm = GetComponent<AStar>();
         GameManager.Get.AddEnemy(GetComponent<Actor>());
-    }
-
-    void Update()
-    {
-        RunAI();
+        algorithm = GetComponent<AStar>();
     }
 
     public void MoveAlongPath(Vector3Int targetPosition)
@@ -29,24 +22,35 @@ public class Enemy : MonoBehaviour
 
     public void RunAI()
     {
+        // If target is null, set target to player (from gameManager)
         if (Target == null)
         {
             Target = GameManager.Get.Player;
         }
 
-        Vector3Int gridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
+        // convert the position of the target to a gridPosition
+        var gridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
 
+        // First check if already fighting, because the FieldOfView check costs more cpu
         if (IsFighting || GetComponent<Actor>().FieldOfView.Contains(gridPosition))
         {
-            IsFighting = true;
-
-            float distance = Vector3.Distance(transform.position, Target.transform.position);
-            if (distance < 1.5f)
+            // If the enemy was not fighting, is should be fighting now
+            if (!IsFighting)
             {
-                Action.Hit(GetComponent<Actor>(), Target);
+                IsFighting = true;
             }
-            else
+
+            // See how far away the player is
+            float targetDistance = Vector3.Distance(transform.position, Target.transform.position);
+
+            // if close ...
+            if (targetDistance <= 1.5f)
             {
+                // ... hit!
+                Action.Hit(GetComponent<Actor>(), Target);
+            } else
+            {
+                // call MoveAlongPath with the gridPosition
                 MoveAlongPath(gridPosition);
             }
         }

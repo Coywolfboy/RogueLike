@@ -45,6 +45,7 @@ public class MapManager : MonoBehaviour
     public int roomMinSize = 6;
     public int maxRooms = 30;
     public int maxEnemies = 2;
+    public int maxItems = 8;
 
     private void Start()
     {
@@ -61,6 +62,7 @@ public class MapManager : MonoBehaviour
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
         generator.SetMaxEnemies(maxEnemies);
+        generator.SetMaxItems(maxItems);
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
@@ -68,12 +70,7 @@ public class MapManager : MonoBehaviour
         SetupFogMap();
     }
 
-    public GameObject CreateActor(string name, Vector2 position)
-    {
-        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
-        actor.name = name;
-        return actor;
-    }
+    
 
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
