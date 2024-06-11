@@ -13,6 +13,8 @@ public class MapManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            currentFloor = 1; // Initialize currentFloor here
+
         }
         else if (instance != this)
         {
@@ -36,7 +38,6 @@ public class MapManager : MonoBehaviour
     public Dictionary<Vector2Int, Node> Nodes = new Dictionary<Vector2Int, Node>();
     public List<Vector3Int> VisibleTiles;
     public Dictionary<Vector3Int, TileData> Tiles;
-    
 
     [Header("Map Settings")]
     public int width = 80;
@@ -45,15 +46,26 @@ public class MapManager : MonoBehaviour
     public int roomMinSize = 6;
     public int maxRooms = 30;
     public int maxEnemies = 2;
-    public int maxItems = 8;
-
+    public int maxItems = 2;
+    public int currentFloor;
     private void Start()
     {
+        SetCurrentFloor(currentFloor); // Ensure UI shows the correct floor initially
         GenerateDungeon();
+        GameManager.Get.LoadGame();
     }
 
+    public void SetCurrentFloor(int floor)
+    {
+        currentFloor = floor;
+        UIManager.Get.SetFloor(currentFloor); // Update UI manager to display the correct floor
+    }
     private void GenerateDungeon()
     {
+        FloorMap.ClearAllTiles();
+        ObstacleMap.ClearAllTiles();
+        FogMap.ClearAllTiles();
+
         Tiles = new Dictionary<Vector3Int, TileData>();
         VisibleTiles = new List<Vector3Int>();
 
@@ -63,14 +75,13 @@ public class MapManager : MonoBehaviour
         generator.SetMaxRooms(maxRooms);
         generator.SetMaxEnemies(maxEnemies);
         generator.SetMaxItems(maxItems);
+        generator.SetCurrentFloor(currentFloor);
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
-
-    
 
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
@@ -145,4 +156,22 @@ public class MapManager : MonoBehaviour
             VisibleTiles.Add(pos);
         }
     }
+
+    public void MoveUp()
+    {
+        GameManager.Get.ClearFloor();
+        SetCurrentFloor(currentFloor + 1); // Update UI and current floor
+        GenerateDungeon();
+    }
+
+    public void MoveDown()
+    {
+        if (currentFloor > 1)  // Zorg ervoor dat de verdieping niet lager wordt dan 1
+        {
+            GameManager.Get.ClearFloor();
+            SetCurrentFloor(currentFloor - 1); // Update de UI en de huidige verdieping
+            GenerateDungeon();
+        }
+    }
+
 }

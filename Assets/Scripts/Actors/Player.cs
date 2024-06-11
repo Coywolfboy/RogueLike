@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,7 +6,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour, Controls.IPlayerActions
 {
     private Controls controls;
-    private Inventory inventory;
+    public Inventory Inventory = new Inventory();
     private bool inventoryIsOpen = false;
     private bool droppingItem = false;
     private bool usingItem = false;
@@ -19,8 +20,11 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
     {
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
         GameManager.Get.Player = GetComponent<Actor>();
-        inventory = GetComponent<Inventory>();
+        GameManager.Get.LoadGame();
+
     }
+
+
 
     private void OnEnable()
     {
@@ -38,103 +42,149 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
     {
         if (context.performed)
         {
-            Move();
+            if (inventoryIsOpen)
+            {
+                Vector2 direction = controls.Player.Movement.ReadValue<Vector2>();
+                if (direction.y > 0)
+                {
+                    UIManager.Get.Inventory.SelectPreviousItem();
+                } else if (direction.y < 0)
+                {
+                    UIManager.Get.Inventory.SelectNextItem();
+                }
+
+            } else
+            {
+                Move();
+            }
         }
     }
+
     public void OnGrab(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             var item = GameManager.Get.GetItemAtLocation(transform.position);
-            if (item == null)
+            if (item != null)
             {
-                Debug.Log("No item at this location.");
-            }
-            else if (!inventory.AddItem(item))
+                if (Inventory.AddItem(item))
+                {
+                    item.gameObject.SetActive(false);
+                    GameManager.Get.RemoveItem(item);
+                    UIManager.Get.AddMessage($"You've picked up a {item.name}.", Color.yellow);
+                } else
+                {
+                    UIManager.Get.AddMessage("Your inventory is full.", Color.red);
+                }
+                
+            } else
             {
-                Debug.Log("Inventory is full.");
-            }
-            else
-            {
-                item.gameObject.SetActive(false);
-                GameManager.Get.RemoveItem(item);
-                Debug.Log("Item added to inventory.");
+                UIManager.Get.AddMessage("You could not find anything.", Color.yellow);
             }
         }
     }
+
     public void OnDrop(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            if (!inventoryIsOpen)
+            if(!inventoryIsOpen)
             {
-                UIManager.Get.InventoryUI.Show(inventory.Items);
+                UIManager.Get.Inventory.Show(Inventory.Items);
                 inventoryIsOpen = true;
                 droppingItem = true;
             }
-            else
-            {
-                var selectedItem = inventory.Items[UIManager.Get.InventoryUI.Selected];
-                inventory.DropItem(selectedItem);
-                selectedItem.transform.position = transform.position;
-                GameManager.Get.AddItem(selectedItem);
-                selectedItem.gameObject.SetActive(true);
-
-                UIManager.Get.InventoryUI.Hide();
-                inventoryIsOpen = false;
-                droppingItem = false;
-            }
         }
     }
+
     public void OnUse(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             if (!inventoryIsOpen)
             {
-                UIManager.Get.InventoryUI.Show(inventory.Items);
+                UIManager.Get.Inventory.Show(Inventory.Items);
                 inventoryIsOpen = true;
                 usingItem = true;
             }
-            else
-            {
-                var selectedItem = inventory.Items[UIManager.Get.InventoryUI.Selected];
-                UseItem(selectedItem);
-                Destroy(selectedItem.gameObject);
+        }
+    }
 
-                UIManager.Get.InventoryUI.Hide();
+    public void OnSelect(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (inventoryIsOpen)
+            {
+                if (droppingItem)
+                {
+                    var item = Inventory.Items[UIManager.Get.Inventory.Selected];
+                    Inventory.DropItem(item);
+                    item.transform.position = transform.position;
+                    GameManager.Get.AddItem(item);
+                    item.gameObject.SetActive(true);
+                    droppingItem = false;
+                }
+                if (usingItem)
+                {
+                    var item = Inventory.Items[UIManager.Get.Inventory.Selected];
+                    Inventory.DropItem(item);
+
+                    UseItem(item);
+
+                    Destroy(item.gameObject);
+                    usingItem = false;
+                }
+
+                UIManager.Get.Inventory.Hide();
                 inventoryIsOpen = false;
-                usingItem = false;
             }
         }
     }
-    public void OnSelect(InputAction.CallbackContext context)
-    {
-        if (context.performed && inventoryIsOpen)
-        {
-            var selectedItem = inventory.Items[UIManager.Get.InventoryUI.Selected];
-            if (droppingItem)
-            {
-                inventory.DropItem(selectedItem);
-                selectedItem.transform.position = transform.position;
-                GameManager.Get.AddItem(selectedItem);
-                selectedItem.gameObject.SetActive(true);
-            }
-            else if (usingItem)
-            {
-                UseItem(selectedItem);
-                Destroy(selectedItem.gameObject);
-            }
 
-            UIManager.Get.InventoryUI.Hide();
+    public void OnExit(InputAction.CallbackContext context)
+    {
+        if (inventoryIsOpen)
+        {
+            UIManager.Get.Inventory.Hide();
             inventoryIsOpen = false;
             droppingItem = false;
             usingItem = false;
         }
+        GameManager.Get.SaveGame();
+
     }
-    public void OnExit(InputAction.CallbackContext context)
+
+    private void UseItem(Consumable item)
     {
-        
+        switch(item.Type)
+        {
+            case Consumable.ItemType.HealthPotion:
+                GetComponent<Actor>().Heal(5);
+                break;
+            case Consumable.ItemType.Fireball:
+                {
+                    var enemies = GameManager.Get.GetNearbyEnemies(transform.position);
+                    foreach (var enemy in enemies)
+                    {
+                        enemy.DoDamage(8, GetComponent<Actor>());
+                        UIManager.Get.AddMessage($"Your fireball damaged the {enemy.name} for 8HP", Color.magenta);
+                    }
+                    break;
+                }
+
+            case Consumable.ItemType.ScrollOfConfusion:
+                {
+                    var enemies = GameManager.Get.GetNearbyEnemies(transform.position);
+                    foreach (var enemy in enemies)
+                    {
+                        enemy.GetComponent<Enemy>().Confuse();
+                        UIManager.Get.AddMessage($"Your scroll confused the {enemy.name}.", Color.magenta);
+                    }
+                    break;
+                }
+                
+        }
     }
 
     private void Move()
@@ -143,21 +193,34 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         Vector2 roundedDirection = new Vector2(Mathf.Round(direction.x), Mathf.Round(direction.y));
         Action.MoveOrHit(GetComponent<Actor>(), roundedDirection);
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
+        CheckForLadder();
     }
-    private void UseItem(Consumable item)
+
+    private void CheckForLadder()
     {
-        // Implement item usage based on the item type
-        switch (item.Type)
+        Ladder ladder = GameManager.Get.GetLadderAtLocation(transform.position);
+
+        if (ladder != null)
         {
-            case Consumable.ItemType.HealthPotion:
-                Debug.Log("Used Health Potion");
-                break;
-            case Consumable.ItemType.Fireball:
-                Debug.Log("Used Fireball");
-                break;
-            case Consumable.ItemType.ScrollOfConfusion:
-                Debug.Log("Used Scroll of Confusion");
-                break;
+            if (ladder.Up)
+            {
+                Debug.Log("Moving Up");
+
+                MapManager.Get.MoveUp();
+            }
+            else
+            {
+                Debug.Log("Moving Down");
+
+                MapManager.Get.MoveDown();
+            }
+        }
+    }
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            CheckForLadder();
         }
     }
 }

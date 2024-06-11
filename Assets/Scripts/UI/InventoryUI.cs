@@ -1,63 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine;
+using System.Linq;
 
 public class InventoryUI : MonoBehaviour
 {
     public Label[] labels = new Label[8];
-    private VisualElement root;
-    private int selected;
-    private int numItems;
+    public VisualElement root;
+    public int selected;
+    public int numItems;
 
-    public int Selected => selected;
+    public int Selected { get => selected; }
+
     // Start is called before the first frame update
-    private void Start()
+    void Start()
     {
-        var uiDocument = GetComponent<UIDocument>();
-        root = uiDocument.rootVisualElement;
-
-        for (int i = 0; i < labels.Length; i++)
-        {
-            labels[i] = root.Q<Label>($"#Item{i + 1}");
-        }
-
-        // Ensure all labels are initialized properly
-        for (int i = 0; i < labels.Length; i++)
-        {
-            if (labels[i] == null)
-            {
-                Debug.LogWarning($"Label {i + 1} could not be found in the UI document.");
-            }
-        }
+        root = GetComponent<UIDocument>().rootVisualElement;
+        labels[0] = root.Q<Label>("Item1");
+        labels[1] = root.Q<Label>("Item2");
+        labels[2] = root.Q<Label>("Item3");
+        labels[3] = root.Q<Label>("Item4");
+        labels[4] = root.Q<Label>("Item5");
+        labels[5] = root.Q<Label>("Item6");
+        labels[6] = root.Q<Label>("Item7");
+        labels[7] = root.Q<Label>("Item8");
 
         Clear();
         root.style.display = DisplayStyle.None;
     }
+
     public void Clear()
     {
-        foreach (var label in labels)
+        for(int i = 0; i < labels.Length; i++)
         {
-            if (label != null)
-            {
-                label.text = "";
-            }
+            labels[i].text = "";
         }
     }
-    private void UpdateSelected()
+
+    public void Show(List<Consumable> list) 
     {
-        for (int i = 0; i < labels.Length; i++)
+        selected = 0;
+        numItems = list.Count;
+        Clear();
+
+        for (int i = 0; i < list.Count; i++)
         {
-            if (i == selected)
-            {
-                labels[i].style.backgroundColor = new StyleColor(Color.green);
-            }
-            else
-            {
-                labels[i].style.backgroundColor = new StyleColor(Color.clear);
-            }
+            labels[i].text = list[i].name;
         }
+        UpdateSelected();
+
+        root.style.display = DisplayStyle.Flex;
+    } 
+
+    public void Hide()
+    {
+        root.style.display = DisplayStyle.None;
     }
+
     public void SelectNextItem()
     {
         if (selected < numItems - 1)
@@ -75,28 +75,19 @@ public class InventoryUI : MonoBehaviour
             UpdateSelected();
         }
     }
-    public void Show(List<Consumable> list)
-    {
-        selected = 0;
-        numItems = list.Count;
-        Clear();
 
-        for (int i = 0; i < numItems; i++)
+    private void UpdateSelected()
+    {
+        for(int i = 0; i < labels.Length; i++)
         {
-            labels[i].text = list[i].name;
+            if (i == selected)
+            {
+                labels[i].style.backgroundColor = Color.green;
+            } else
+            {
+                labels[i].style.backgroundColor = Color.clear;
+            }
         }
-
-        UpdateSelected();
-        root.style.display = DisplayStyle.Flex;
     }
-
-    public void Hide()
-    {
-        root.style.display = DisplayStyle.None;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class Inventory
 {
-    public List<Consumable> Items { get; private set; } = new List<Consumable>();
+    public List<Consumable> Items = new List<Consumable>();
     public int MaxItems = 8;
 
     public bool AddItem(Consumable item)
@@ -13,23 +13,17 @@ public class Inventory : MonoBehaviour
         {
             Items.Add(item);
             return true;
+        } else
+        {
+            return false;
         }
-        return false;
     }
 
     public void DropItem(Consumable item)
     {
-        Items.Remove(item);
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (Items.Contains(item))
+        {
+            Items.Remove(item);
+        }
     }
 }

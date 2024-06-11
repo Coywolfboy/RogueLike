@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -10,8 +9,14 @@ public class DungeonGenerator : MonoBehaviour
     private int maxRooms;
     private int maxEnemies;
     private int maxItems;
+    private int currentFloor;
 
     List<Room> rooms = new List<Room>();
+    private List<string> enemyNames = new List<string>
+    {
+        "Pig", "Snake", "Spin", "Bij", "Tijger",
+        "Draak", "Paard", "Spook", "Hond", "Insect"
+    };
 
     public void SetSize(int width, int height)
     {
@@ -34,9 +39,15 @@ public class DungeonGenerator : MonoBehaviour
     {
         maxEnemies = max;
     }
+
     public void SetMaxItems(int max)
     {
         maxItems = max;
+    }
+
+    public void SetCurrentFloor(int floor)
+    {
+        currentFloor = floor;
     }
 
     public void Generate()
@@ -53,21 +64,16 @@ public class DungeonGenerator : MonoBehaviour
 
             var room = new Room(roomX, roomY, roomWidth, roomHeight);
 
-            // if the room overlaps with another room, discard it
             if (room.Overlaps(rooms))
             {
                 continue;
             }
-
-            // add tiles make the room visible on the tilemap
+            CreateRoom(room);
             for (int x = roomX; x < roomX + roomWidth; x++)
             {
                 for (int y = roomY; y < roomY + roomHeight; y++)
                 {
-                    if (x == roomX
-                        || x == roomX + roomWidth - 1
-                        || y == roomY
-                        || y == roomY + roomHeight - 1)
+                    if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1)
                     {
                         if (!TrySetWallTile(new Vector3Int(x, y)))
                         {
@@ -78,20 +84,58 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         SetFloorTile(new Vector3Int(x, y, 0));
                     }
-
                 }
             }
 
-            // create a coridor between rooms
             if (rooms.Count != 0)
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
+
             PlaceEnemies(room, maxEnemies);
             PlaceItems(room, maxItems);
             rooms.Add(room);
         }
-        var player = GameManager.Get.CreateGameObject("Player", rooms[0].Center());
+
+        if (currentFloor == 1)
+        {
+            GameManager.Get.CreateGameObject("LadderDown", rooms[rooms.Count - 1].Center()).GetComponent<Ladder>().Up = true;
+        }
+        else if (currentFloor < 1)
+        {
+            GameManager.Get.CreateGameObject("LadderUp", rooms[0].Center()).GetComponent<Ladder>().Up = false;
+            GameManager.Get.CreateGameObject("LadderDown", rooms[rooms.Count - 1].Center()).GetComponent<Ladder>().Up = true;
+        }
+
+        if (GameManager.Get.Player != null)
+        {
+            GameManager.Get.Player.transform.position = new Vector3(rooms[0].Center().x + 0.5f, rooms[0].Center().y + 0.5f, 0);
+        }
+        else
+        {
+            GameManager.Get.CreateGameObject("Player", rooms[0].Center());
+        }
+
+    }
+
+
+    private void CreateRoom(Room room)
+    {
+        for (int x = room.X; x < room.X + room.Width; x++)
+        {
+            for (int y = room.Y; y < room.Y + room.Height; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                if (x == room.X || x == room.X + room.Width - 1 || y == room.Y || y == room.Y + room.Height - 1)
+                {
+                    TrySetWallTile(pos);
+                }
+                else
+                {
+                    SetFloorTile(pos);
+                }
+            }
+        }
     }
 
     private bool TrySetWallTile(Vector3Int pos)
@@ -143,18 +187,14 @@ public class DungeonGenerator : MonoBehaviour
         BresenhamLine.Compute(tunnelCorner, newRoomCenter, tunnelCoords);
 
         // Set the tiles for this tunnel
-        for (int i = 0; i < tunnelCoords.Count; i++)
+        foreach (var coord in tunnelCoords)
         {
-            SetFloorTile(new Vector3Int(tunnelCoords[i].x, tunnelCoords[i].y));
-
-            for (int x = tunnelCoords[i].x - 1; x <= tunnelCoords[i].x + 1; x++)
+            SetFloorTile(new Vector3Int(coord.x, coord.y, 0));
+            for (int x = coord.x - 1; x <= coord.x + 1; x++)
             {
-                for (int y = tunnelCoords[i].y - 1; y <= tunnelCoords[i].y + 1; y++)
+                for (int y = coord.y - 1; y <= coord.y + 1; y++)
                 {
-                    if (!TrySetWallTile(new Vector3Int(x, y, 0)))
-                    {
-                        continue;
-                    }
+                    TrySetWallTile(new Vector3Int(x, y, 0));
                 }
             }
         }
@@ -162,50 +202,51 @@ public class DungeonGenerator : MonoBehaviour
 
     private void PlaceEnemies(Room room, int maxEnemies)
     {
-        // the number of enemies we want
         int num = Random.Range(0, maxEnemies + 1);
 
-        for(int counter = 0; counter < num; counter++)
+        for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and substract by 1
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different enemies
-            if (Random.value < 0.5f)
+            List<string> weightedEnemies = new List<string>();
+
+            for (int i = 0; i < enemyNames.Count; i++)
             {
-                GameManager.Get.CreateGameObject("Pig", new Vector2(x, y));
+                int weight = Mathf.Max(1, currentFloor - (enemyNames.Count - i - 1));
+                for (int j = 0; j < weight; j++)
+                {
+                    weightedEnemies.Add(enemyNames[i]);
+                }
             }
-            else
-            {
-                GameManager.Get.CreateGameObject("Snake", new Vector2(x, y));
-            }
+
+            string selectedEnemy = weightedEnemies[Random.Range(0, weightedEnemies.Count)];
+
+            GameManager.Get.CreateGameObject(selectedEnemy, new Vector2(x, y));
         }
     }
+
     private void PlaceItems(Room room, int maxItems)
     {
-        // the number of items we want to place
         int num = Random.Range(0, maxItems + 1);
 
         for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and subtract by 1
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // randomly choose an item to place
-            float itemType = Random.value;
-            if (itemType < 0.33f)
+            float value = Random.value;
+            if (value > 0.8f)
             {
-                GameManager.Get.CreateItem("HealthPotion", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("ScrollOfConfusion", new Vector2(x, y));
             }
-            else if (itemType < 0.66f)
+            else if (value > 0.5f)
             {
-                GameManager.Get.CreateItem("Fireball", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("Fireball", new Vector2(x, y));
             }
             else
             {
-                GameManager.Get.CreateItem("ScrollOfConfusion", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("HealthPotion", new Vector2(x, y));
             }
         }
     }

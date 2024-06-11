@@ -6,11 +6,17 @@ public class Enemy : MonoBehaviour
     public Actor Target;
     public bool IsFighting = false;
     private AStar algorithm;
+    private int confused = 0;
 
     private void Start()
     {
         GameManager.Get.AddEnemy(GetComponent<Actor>());
         algorithm = GetComponent<AStar>();
+    }
+
+    public void Confuse()
+    {
+        confused = 8;
     }
 
     public void MoveAlongPath(Vector3Int targetPosition)
@@ -26,6 +32,13 @@ public class Enemy : MonoBehaviour
         if (Target == null)
         {
             Target = GameManager.Get.Player;
+        }
+
+        if (confused > 0)
+        {
+            UIManager.Get.AddMessage($"The {name} is confused and cannot act.", Color.magenta);
+            confused--;
+            return;
         }
 
         // convert the position of the target to a gridPosition

@@ -1,9 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/styles.uss?fileID=7433441132597879392&amp;guid=5907deff6974c6d44ab73930971aa414&amp;type=3#styles" />
-    <ui:VisualElement style="flex-grow: 0; height: 30px; width: 200px; flex-shrink: 0; background-color: rgb(0, 0, 0); bottom: 25px; left: 25px; position: absolute;">
-        <ui:VisualElement style="background-color: rgb(185, 0, 0); justify-content: center; align-items: center;">
-            <ui:VisualElement name="HealthBar" style="background-color: rgb(12, 176, 0); left: 0; top: 0; bottom: 0; position: absolute; width: 200px;" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 0; height: 122px; width: 233px; flex-shrink: 0; background-color: rgba(0, 0, 0, 0); bottom: 25px; left: 24px; position: absolute;">
+        <ui:VisualElement style="background-color: rgb(185, 0, 0); justify-content: center; align-items: center; -unity-text-outline-color: rgba(0, 0, 0, 0.5); width: 199px; top: 85px; left: 15px;">
+            <ui:VisualElement name="HealthBar" style="background-color: rgb(12, 176, 0); left: 0; top: 0; bottom: 0; position: absolute; right: 0;" />
             <ui:Label tabindex="-1" text="30/30 HP" parse-escape-sequences="true" display-tooltip-when-elided="true" name="HealthText" style="-unity-font-style: bold; color: rgb(255, 255, 255); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-text-align: upper-center;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="background-color: rgba(45, 166, 88, 0.45); justify-content: center; align-items: center; -unity-text-outline-color: rgba(0, 0, 0, 0.5); position: absolute; top: 45px; width: 200px; border-left-color: rgb(32, 255, 20); border-right-color: rgb(32, 255, 20); border-top-color: rgb(32, 255, 20); border-bottom-color: rgb(32, 255, 20); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; left: 15px;">
+            <ui:Label tabindex="-1" text="XP" parse-escape-sequences="true" display-tooltip-when-elided="true" name="XP" style="-unity-font-style: bold; color: rgb(255, 255, 255); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-text-align: upper-center;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VisualElement" style="background-color: rgba(102, 174, 255, 0.45); justify-content: center; align-items: center; -unity-text-outline-color: rgba(0, 0, 0, 0.5); position: absolute; top: 5px; width: 200px; -unity-background-image-tint-color: rgb(46, 28, 28); border-left-color: rgb(0, 69, 248); border-right-color: rgb(0, 69, 248); border-top-color: rgb(0, 69, 248); border-bottom-color: rgb(0, 69, 248); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; left: 15px;">
+            <ui:Label tabindex="-1" text="Level" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Level" style="-unity-font-style: bold; color: rgb(255, 255, 255); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-text-align: upper-center;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -1,15 +1,13 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd">
-    <ui:VisualElement style="flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 20px; -unity-background-image-tint-color: rgba(202, 123, 39, 0); background-color: rgb(212, 133, 41);">
-        <ui:Label text="Inventory" style="font-size: 30px; font-weight: bold; -unity-font-style: bold; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-        <ui:VisualElement style="padding-top: 20px;">
-            <ui:Label name="Item 1" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 2" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 3" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 4" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 5" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 6" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 7" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-            <ui:Label name="Item 8" text="Label" style="margin-bottom: 10px; -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;);" />
-        </ui:VisualElement>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(20, 21, 46);">
+        <ui:Label tabindex="-1" text="Inventory" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); -unity-font: resource(&apos;Fonts/VIDEOPHREAK&apos;); -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 28px; -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item1" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item2" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item3" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item4" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item5" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item6" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item7" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Item8" style="-unity-font-definition: resource(&apos;Fonts/VIDEOPHREAK SDF&apos;); color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
     </ui:VisualElement>
 </ui:UXML>

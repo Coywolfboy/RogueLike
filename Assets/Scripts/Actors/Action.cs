@@ -37,7 +37,7 @@ public class Action : MonoBehaviour
         if (damage > 0)
         {
             UIManager.Get.AddMessage($"{description} for {damage} hit points.", color);
-            target.DoDamage(damage);
+            target.DoDamage(damage, actor);
         } else
         {
             UIManager.Get.AddMessage($"{description} but does no damage.", color);

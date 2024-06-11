@@ -44,6 +44,6 @@ public class Messages : MonoBehaviour
     {
         MoveUp();
         labels[0].text = content;
-        labels[0].style.color = color;
+        labels[0].style.color = new StyleColor(color);
     }
 }
